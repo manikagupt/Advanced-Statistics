@@ -1,0 +1,401 @@
+---
+title: "Factor Hair Project 2 Notebook"
+output:
+  pdf_document: default
+  word_document: default
+  html_notebook: default
+---
+##Read File in csv format and install the relevant packages
+
+```{r}
+mydata = read.csv("C:/Users/manik/Desktop/Manika PGDBABI/Advanced Stats/Project 2/Factor-Hair-Revised.csv")
+mydata
+```
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("corrplot")
+library(corrplot)
+install.packages("lubridate")
+library(lubridate)
+
+```
+
+
+##Getting the details of the data like summary, dimension, str
+```{r}
+dim(mydata)
+```
+```{r}
+str(mydata)
+```
+##Getting the coloumn names
+```{r}
+names(mydata)
+```
+```{r}
+summary(mydata)
+```
+##From the summary we could make out that data is scaled properly. now we need to look for the missing values in the data. Before that we need to rename the variables 
+```{r}
+colnames(mydata) = c("Count","Product Quality","E-Commerce","Technical Support","Complaint Resolution","Advertising","Product Line","Salesforce Image","Competitive Pricing","Warranty & Claims","Order & Billing","Delivery Speed","Customer Satisfaction")
+names=names(mydata)
+names(mydata)
+```
+```{r}
+attach(mydata)
+sum(is.na(mydata))
+```
+## So there is no missing value in the data
+## now we need to identify the Outliers in the data via box plot matrix and also analyse using histograms of each variable
+
+```{r}
+mydata=data.frame(mydata)
+par(mfrow=c(3,4))
+hist(`Customer Satisfaction`,main="Histogram of Customer Satisfaction",breaks=c(0:10),xlim=c(0,10),ylim=c(0,40),labels=T)
+hist(`Product Quality`,main="Product Quality",labels=T,xlab="Product Quality",xlim=c(0,10),ylim=c(0,20))
+hist(`E-Commerce`,main="E-Commerce",labels=T,xlab="E-Commerce",xlim=c(0,10),ylim=c(0,40))
+hist(`Technical Support`,main="Technical Support",labels=T,xlab="Technical Support",xlim=c(0,10),ylim=c(0,40))
+hist(`Complaint Resolution`,main="Complaint Resolution",labels=T,xlab="Complaint Resolution",xlim=c(0,10),ylim=c(0,20))
+hist(Advertising,main="Advertising",labels=T,xlab="Advertising",xlim=c(0,10),ylim=c(0,20))
+hist(`Product Line`,main="Product Line",labels=T,xlab="Product Line",xlim=c(0,10),ylim=c(0,30))
+hist(`Salesforce Image`,main="Salesforce Image",labels=T,xlab="Salesforce Image",xlim=c(0,10),ylim=c(0,30))
+hist(`Competitive Pricing`,main="Competitive Pricing",labels=T,xlab="Competitive Pricing",xlim=c(0,10),ylim=c(0,30))
+hist(`Warranty & Claims`,main="Warranty & Claims",labels=T,xlab="Warranty & Claims",xlim=c(0,10),ylim=c(0,40))
+hist(`Order & Billing`,main="Order & Billing",labels=T,xlab="Order & Billing",xlim=c(0,10),ylim=c(0,35))
+hist(`Delivery Speed`,main="Delivery Speed",labels=T,xlab="Delivery Speed",xlim=c(0,10),ylim=c(0,35))
+```
+```{r}
+mydata
+```
+
+```{r}
+par(mfrow=c(2,1))
+boxplot(`Customer Satisfaction`, main="Customer Satisfaction",ylim=c(0,12))
+```
+
+```{r}
+boxplot(mydata[,-1],las=2,use.cols=TRUE)
+```
+
+
+
+
+```{r}
+list("Outliers")
+```
+##Boxplot of the variables showing outlier values
+
+```{r}
+par(mfrow=c(2,2))
+boxplot(`E-Commerce`,main="E-Commerce")
+boxplot(`Salesforce Image`,main="Salesforce Image")
+boxplot(`Order & Billing`,main="Order & Billing")
+boxplot(`Delivery Speed`,main="Delivery Speed")
+```
+## Scatter Plots and best fit lines of all the independent variables against Customer Satisfaction
+```{r}
+par(mfrow=c(4,3))
+plot(`Customer Satisfaction`~`Product Quality`,xlab="Product Quality",pch=20,col="blue")
+abline(lm(`Customer Satisfaction` ~`Product Quality`,col="red"))
+plot(`Customer Satisfaction`~ `E-Commerce` ,xlab="E-Commerce",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`E-Commerce`, col="red"))
+plot(`Customer Satisfaction`~ `Technical Support` ,xlab="Technical Support",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Technical Support`,col="red"))
+plot(`Customer Satisfaction`~ `Complaint Resolution`,xlab="Complaint Resolution",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Complaint Resolution`,col="red"))
+plot(`Customer Satisfaction`~`Advertising`,xlab="Advertising",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Advertising`,col="red"))
+plot(`Customer Satisfaction`~ `Product Line`,xlab="Product Line",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Product Line`,col="red"))
+plot(`Customer Satisfaction`~ `Salesforce Image`,xlab="Salesforce Image",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Salesforce Image`,col="red"))
+plot(`Customer Satisfaction`~`Competitive Pricing`,xlab="Competitive Pricing",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Competitive Pricing`,col="red"))
+plot(`Customer Satisfaction`~ `Warranty & Claims`,xlab="Warranty & Claims",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Warranty & Claims`,col="red"))
+plot(`Customer Satisfaction`~ `Order & Billing` ,xlab="Order & Billing",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Order & Billing`,col="red"))
+plot(`Customer Satisfaction`~`Delivery Speed` ,xlab="delivery Speed",col="blue")
+abline(lm(formula= `Customer Satisfaction` ~`Delivery Speed` ,col="red"))
+```
+
+```{r}
+install.packages("car")
+library(car)
+install.packages("cartools")
+library(cartools)
+install.packages("psych")
+library(psych)
+```
+##Above packages will be required for regression study and Factor analysis
+##
+
+```{r}
+mydata1=mydata[,-1]
+cor_data=cor(mydata1[,-12])
+cor_data
+
+```
+
+```{r}
+pairs(mydata1[,-12])
+cor(mydata[,-12],method="spearman")
+```
+
+##Following are the various formats of Correlation Matrix to have a better picture of multicollinearity
+
+```{r}
+par(mfrow=c(1,1))
+corrplot(cor_data)
+```
+
+```{r}
+corrplot(cor_data,method="pie")
+```
+
+```{r}
+corrplot(cor_data,method="number")
+```
+
+## Next step is to check the multicollinearity in the variables using VIF
+
+```{r}
+attach(mydata1)
+x_reg=lm(`Customer Satisfaction`~.,data=mydata1)
+vif_data=vif(x_reg,data=mydata1)
+```
+##The Variance Inflation Factor (VIF) measures the impact of collinearity among the independent variables in a regression model
+##VIF is 1/Tolerance, it is always greater than or equal to 1. Small tolerance value indicates that the variables under consideration are almost a perfect linear combination of the independent variables already in the equation and that it should not be added to the regression equation
+##High Values of VIF are often regarded as indicating multicollinearity, but in weaker models VIF values above 2.5 may be a cause for concern. 
+
+```{r}
+write.csv(vif_data,"vif_data.csv")
+vif_data.frame=read.csv("vif_data.csv")
+vif_data.frame
+
+```
+
+##As we know that when R2 and VIF values are high for any of the variables in the above model, multicollinearity is probably an issue. 
+## In the table above we can see that VIF is on higher side for certain variables so multicollinearity is quite present between the dependent variables
+
+##Next we will use Cortest Bartlet method to check the correlation in the matrix
+```{r}
+cortest.bartlett(cor_data,100)
+```
+##Bartlett's test of sphericity, tests the hypothesis that our correlation matrix is an identity matrix, which would indicate that our variables are unrelated and therefore unsuitable for structure detection. Small values (less than 0.05) of the significance level indicate that a factor analysis may be useful with our data.
+##Hence, weknow that If p value less than 0.05 then it is ideal case of dimensional reduction, so we will now proceed to dimensional reduction of the dataset, i.e. Factor Analysis.
+
+##The Kaiser-Meyer-Olkin Measure of Sampling Adequacy is a statistic test that indicates the proportion of variance in the independent variables that might be caused by underlying factors. High values (close to 1.0) generally indicate that a factor analysis may be useful with our data. If the value is less than 0.50, the results of the factor analysis probably won't be very useful.
+##Hence Next step is KMO test
+```{r}
+KMO(cor_data)
+```
+
+##Hence, the data is suited for Factor analysis and dimentional reduction
+## Factor analysis method accounts for finding / extracting a linear combination of variables that show as much variation in original variables as possible.
+##Continuing this way until there are as many components as variables. Then, few of the factors are identified that account for most variationand can be used to replace original variables.
+##To find how many components are needed to represent the variables, we need to go for a scree plot
+##Which requires calculation of Eigen values
+
+```{r}
+eigen=eigen(cor_data)
+eigen
+```
+
+```{r}
+EV=eigen$values
+EV
+```
+##Plotting scree plot to identify the maximum factors responsible for change in dependent variable
+
+```{r}
+plot(EV,main="Scree Plot",xlab="Factors",pch=10,col="red")
+lines(EV,col="blue")
+abline(h=1,lty=3,col="green")
+```
+
+##The scree plot helps us to determine the optimal number of components. As we see that first four variables have eigen values higher than one, so we choose these four variables hencefourth.
+
+## Extracting and tabulating the four factors as per the Scree plot analysis
+```{r}
+FA=factanal(mydata1[,-12],4,rotation="none")
+print(FA,digitd=4,sort=TRUE)
+```
+##The % of Variance column gives the ratio, expressed as a percentage, of the variance accounted for by each extracted component to the total variance in all of the variables.
+##The Cumulative % column gives the percentage of variance accounted for by the first n components. For example, the cumulative percentage for the second component is the sum of the percentage of variance for the first and second components, hence so forth. 
+##The cumulative variability explained by these three factors in the extracted solution is about 69.4%. so you can considerably reduce the complexity of the data set by using these factors, with only a 30% loss of information.
+
+
+```{r}
+FA1=FA$loadings[,1:4]
+FA1=print(FA1,cutoff=0.3)
+```
+```{r}
+unrotatedprofile=plot(unrotate,row.names(unrotate$loadings))
+
+```
+
+```{r}
+fa.diagram(unrotate)
+```
+
+
+```{r}
+unrotate=principal(mydata1[,-12],nfactors=4,rotate="none")
+FA=print(unrotate,digits=3)
+```
+##h2 is Communality : Extraction communalities are estimates of the variance in each variable accounted for by the factors in the factor solution. Small values indicate variables that do not fit well with the factor solution, and should possibly be dropped from the analysis
+##With Varimax Rotation. Factor Analysis using pa Method
+
+```{r}
+Rotate=principal(mydata1[,-12],nfactors=4,rotate="varimax")
+print(Rotate,digits=3)
+```
+##Communalities remain unchanged after rotation
+
+##Scatter matrix of factor scores
+
+```{r}
+Rotate$scores
+RotatedProfile=plot(Rotate,row.names(Rotate$loadings))
+```
+
+```{r}
+RFA1=print(Rotate$loadings,cutoff=0.3)
+```
+
+##After rotation 
+```{r}
+write.csv(RFA1,"Rotated FActor loading.csv")
+fa.diagram(Rotate)
+```
+
+##tabulating the scores of four factors selected
+```{r}
+hair_data=cbind(mydata1[,12],Rotate$scores)
+head(hair_data)
+```
+
+##Naming the columns of new dataset i.e. hair_data. Now as seenin FA diagram we know the cluster of variables representing each one based on the loading.
+##The first cluster of variables is "Delivery Speed", "Complaint Resolution" and "Order $ Billing" ; can be attributed to "Order Fulfillment KPI"
+##The next cluster of variables is "Salesforce Image", "E-Commerce" & "Advertising" ; Can be attributed to "Brand Image"
+##The next cluster of variables is "Technical Support" & "Warranty & Claims; can be attributed to "After Sales Support"
+## The next cluster of variables is "Product Quality", "Competitive Pricing" & "Product Line"; can be attributed to "Product Diffrentiator"
+
+```{r}
+colnames(hair_data)=c("Cust Satis","Order fulfillment KPI","Brand Image","After Sales Support","Product Differentiator")
+head(hair_data)
+```
+```{r}
+str(hair_data)
+```
+
+```{r}
+class(hair_data)
+```
+## We need to convert it to data frame for ease 
+```{r}
+hair_data=data.frame(hair_data)
+class(hair_data)
+```
+```{r}
+summary(hair_data)
+```
+
+## To identify a correlation of clustered variables in the hair_data dataset
+```{r}
+cor_hair_data=cor(hair_data)
+cor(hair_data,method="spearman")
+```
+## To plot the correlation plot
+
+```{r}
+par(mfrow=c(1,1))
+corrplot(cor_hair_data)
+```
+
+```{r}
+corrplot(cor_hair_data,method="pie")
+```
+
+```{r}
+corrplot(cor_hair_data,method="number")
+attach(hair_data)
+```
+
+##Creating two data sets for testing and training 
+##Splitting the data in 70:30 ratio
+```{r}
+set.seed(100)
+dim(hair_data)
+```
+```{r}
+indices=sample(1:nrow(hair_data),0.7*nrow(hair_data))
+train=hair_data[indices,]
+test=hair_data[-indices,]
+dim(train)
+```
+```{r}
+dim(test)
+```
+##Creating a linear model
+```{r}
+model1=lm(Cust.Satis ~.,data=train)
+summary(model1)
+```
+```{r}
+vif(model1)
+```
+
+##All VIF are close to 1 so multicolinearity problem has been addressed
+##All the 4 factors are significant
+##To check wether model is good or not , we will use root mean square error
+#Mean Squared error
+
+```{r}
+mse1=mean(model1$residuals^2)
+mse1
+```
+
+##The value of mean square error is coming from train data set
+```{r}
+rmse1=sqrt(mse1)
+rmse1
+```
+
+##Now using the test data to predict
+```{r}
+pred=predict(model1, newdata=test,type="response")
+pred
+```
+
+```{r}
+test$Cust.Satis.predict=pred
+head(test,10)
+```
+
+
+##Mean Predicted error of test data & RMSE
+```{r}
+mse2=mean((test$Cust.Satis-test$Cust.Satis.predict)^2)
+mse2
+```
+
+##Root mean Square test
+
+
+```{r}
+rmse2=sqrt(mse2)
+rmse2
+```
+##Correlation
+```{r}
+cor(test$Cust.Satis,test$Cust.Satis.predict)^2
+```
+
+
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
